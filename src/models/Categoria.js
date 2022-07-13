@@ -1,21 +1,18 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
 
-const Usuario = sequelize.define(
-	'usuarios',
+const Categoria = sequelize.define(
+	'categorias',
 	{
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		username: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true
-		},
-		password: {
-			type: DataTypes.STRING
+		nome: {
+			type: DataTypes.STRING(200),
+			unique: true,
+			allowNull: false
 		}
 	},
 	{
@@ -26,4 +23,4 @@ const Usuario = sequelize.define(
 	}
 );
 
-export default Usuario;
+export default Categoria;
