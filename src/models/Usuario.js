@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from "sequelize";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
 
 const Usuario = sequelize.define(
@@ -11,7 +11,8 @@ const Usuario = sequelize.define(
 		},
 		username: {
 			type: DataTypes.STRING,
-			allowNull: false
+			allowNull: false,
+			unique: true
 		},
 		password: {
 			type: DataTypes.STRING
@@ -19,7 +20,9 @@ const Usuario = sequelize.define(
 	},
 	{
 		freezeTableName: true,
-		timestamps: true
+		timestamps: true,
+		createdAt: 'created_at',
+		updatedAt: 'updated_at'
 	}
 );
 

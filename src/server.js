@@ -18,13 +18,10 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.get('/usuario', async (req, res) => {
-    Usuario.create({
-        username: 'kunzgabriel',
-        password: '12345'
-    })
+app.use((req, res) => {
+  res.status(404).send('Página não encontrada')
 });
 
 app.listen(3000, () => {
-  console.log(`Example app listening on port 3000!`);
+  console.log(`Servidor rodando na porta 3000!`);
 });

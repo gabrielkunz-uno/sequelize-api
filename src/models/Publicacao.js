@@ -1,7 +1,6 @@
-
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/config";
-import Usuario from "./Usuario";
+import Usuario from "./Usuario"
 
 const Publicacao = sequelize.define(
 	'publicacoes',
@@ -22,11 +21,15 @@ const Publicacao = sequelize.define(
 	},
 	{
 		freezeTableName: true,
-		timestamps: true
+		timestamps: true,
+		createdAt: 'created_at',
+		updatedAt: 'updated_at'
 	}
 );
+
+//relacionamentos
 Publicacao.belongsTo(Usuario, {
-    foreignKey: 'id_usuario'
-})
+	foreignKey: 'id_usuario'
+});
 
 export default Publicacao;
