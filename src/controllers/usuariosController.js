@@ -97,7 +97,7 @@ const update = async (id, dados, res) => {
   //update dos campos
   Object.keys(dados).forEach(field => usuario[field] = dados[field]);
 
-  usuario.save();
+  await usuario.save();
   return res.status(200).send({
     message: `Usuário ${id} atualizado com sucesso`,
     data: usuario
@@ -126,14 +126,14 @@ const deletar = async (req, res) => {
       return res.status(400).send({ message: `Não foi encontrado usuário com o id ${id}` })
     }
 
-    usuario.destroy();
+    await usuario.destroy();
     return res.status(200).send({
       message: `Usuário id ${id} deletado com sucesso`
-    })
+    });
   } catch (error) {
     return res.status(500).send({
       message: error.message
-    })
+    });
   }
 }
 

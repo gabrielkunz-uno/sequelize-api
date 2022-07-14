@@ -86,7 +86,7 @@ const update = async (id, dados, res) => {
   //update dos campos
   Object.keys(dados).forEach(field => autor[field] = dados[field]);
 
-  autor.save();
+  await autor.save();
   return res.status(200).send({
     message: `Autor ${id} atualizada com sucesso`,
     data: autor
@@ -114,14 +114,14 @@ const deletar = async (req, res) => {
       return res.status(400).send({ message: `Não foi encontrada autor com o id ${id}` })
     }
 
-    autor.destroy();
+    await autor.destroy();
     return res.status(200).send({
       message: `Autor id ${id} deletado com sucesso`
-    })
+    });
   } catch (error) {
     return res.status(500).send({
       message: error.message
-    })
+    });
   }
 }
 
