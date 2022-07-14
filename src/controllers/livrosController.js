@@ -1,12 +1,12 @@
 //responsavel por executar o que tiver que ser executado
 //as funcoes de lidar com o banco de dados
 //os cruds - GetAll, GetById, Persistir, Delete
-import Categoria from "../models/Categoria";
+import Livro from "../models/Livro";
 
 const getAll = async (req, res) => {
   try {
-    const categorias = await Categoria.findAll();
-    return res.status(200).send(categorias);
+    const livros = await Livro.findAll();
+    return res.status(200).send(livros);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -26,19 +26,19 @@ const getById = async (req, res) => {
       });
     }
 
-    let categoria = await Categoria.findOne({
+    let livro = await Livro.findOne({
       where: {
         id
       }
     });
 
-    if (!categoria) {
+    if (!livro) {
       return res.status(400).send({
-        message: `Não foi encontrada categoria com o id ${id}`
+        message: `Não foi encontrado livro com o id ${id}`
       });
     }
 
-    return res.status(200).send(categoria);
+    return res.status(200).send(livro);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -63,44 +63,32 @@ const persistir = async (req, res) => {
 }
 
 const create = async (dados, res) => {
-  let { nome } = dados;
+  let { titulo, sinopse, emprestado, id_categoria, id_autor } = dados;
 
-  let categoriaExistente = await Categoria.findOne({
-    where: {
-      nome
-    }
+  let livro = await Livro.create({
+    titulo, sinopse, emprestado, id_categoria, id_autor
   });
-
-  if (categoriaExistente) {
-    return res.status(400).send({
-      message: 'Já existe uma categoria cadastrada com esse nome'
-    })
-  }
-
-  let categoria = await Categoria.create({
-    nome
-  });
-  return res.status(201).send(categoria)
+  return res.status(201).send(livro)
 }
 
 const update = async (id, dados, res) => {
-  let categoria = await Categoria.findOne({
+  let livro = await Livro.findOne({
     where: {
       id
     }
   });
 
-  if (!categoria) {
-    return res.status(400).send({ type: 'error', message: `Não foi encontrada categoria com o id ${id}` })
+  if (!livro) {
+    return res.status(400).send({ type: 'error', message: `Não foi encontrado livro com o id ${id}` })
   }
 
   //update dos campos
-  Object.keys(dados).forEach(field => autor[field] = dados[field]);
+  Object.keys(dados).forEach(field => livro[field] = dados[field]);
 
-  categoria.save();
+  livro.save();
   return res.status(200).send({
-    message: `Categoria ${id} atualizada com sucesso`,
-    data: categoria
+    message: `Livro ${id} atualizada com sucesso`,
+    data: livro
   });
 }
 
@@ -111,23 +99,23 @@ const deletar = async (req, res) => {
     id = id ? id.replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe um id válido para deletar a categoria'
+        message: 'Informe um id válido para deletar o livro'
       });
     }
 
-    let categoria = await Categoria.findOne({
+    let livro = await Livro.findOne({
       where: {
         id
       }
     });
 
-    if (!categoria) {
-      return res.status(400).send({ message: `Não foi encontrada categoria com o id ${id}` })
+    if (!livro) {
+      return res.status(400).send({ message: `Não foi encontrada livro com o id ${id}` })
     }
 
-    categoria.destroy();
+    livro.destroy();
     return res.status(200).send({
-      message: `Categoria id ${id} deletada com sucesso`
+      message: `Livro id ${id} deletado com sucesso`
     })
   } catch (error) {
     return res.status(500).send({

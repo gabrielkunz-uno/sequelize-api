@@ -1,12 +1,12 @@
 //responsavel por executar o que tiver que ser executado
 //as funcoes de lidar com o banco de dados
 //os cruds - GetAll, GetById, Persistir, Delete
-import Categoria from "../models/Categoria";
+import Usuario from "../models/Usuario";
 
 const getAll = async (req, res) => {
   try {
-    const categorias = await Categoria.findAll();
-    return res.status(200).send(categorias);
+    const usuarios = await Usuario.findAll();
+    return res.status(200).send(usuarios);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -19,26 +19,26 @@ const getById = async (req, res) => {
     let { id } = req.params;
 
     //garante que o id só vai ter NUMEROS;
-    id = id.replace(/\D/g, '');
+    id = id ? id.replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
         message: 'Informe um id válido para consulta'
       });
     }
 
-    let categoria = await Categoria.findOne({
+    let usuario = await Usuario.findOne({
       where: {
         id
       }
     });
 
-    if (!categoria) {
+    if (!usuario) {
       return res.status(400).send({
-        message: `Não foi encontrada categoria com o id ${id}`
+        message: `Não foi encontrado usuário com o id ${id}`
       });
     }
 
-    return res.status(200).send(categoria);
+    return res.status(200).send(usuario);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -63,71 +63,72 @@ const persistir = async (req, res) => {
 }
 
 const create = async (dados, res) => {
-  let { nome } = dados;
+  let { nome, cpfcnpj, email, telefone } = dados;
 
-  let categoriaExistente = await Categoria.findOne({
+  let usuarioExistente = await Usuario.findOne({
     where: {
-      nome
+      cpfcnpj
     }
   });
 
-  if (categoriaExistente) {
+  if (usuarioExistente) {
     return res.status(400).send({
-      message: 'Já existe uma categoria cadastrada com esse nome'
+      message: 'Já existe uma um usuário cadastrado com esse CPF/CNPJ'
     })
   }
 
-  let categoria = await Categoria.create({
-    nome
+  let usuario = await Usuario.create({
+    nome, cpfcnpj, email, telefone
   });
-  return res.status(201).send(categoria)
+  return res.status(201).send(usuario)
 }
 
 const update = async (id, dados, res) => {
-  let categoria = await Categoria.findOne({
+  let usuario = await Usuario.findOne({
     where: {
       id
     }
   });
 
-  if (!categoria) {
-    return res.status(400).send({ type: 'error', message: `Não foi encontrada categoria com o id ${id}` })
+  if (!usuario) {
+    return res.status(400).send({ type: 'error', message: `Não foi encontrado usuário com o id ${id}` })
   }
 
   //update dos campos
-  Object.keys(dados).forEach(field => autor[field] = dados[field]);
+  Object.keys(dados).forEach(field => usuario[field] = dados[field]);
 
-  categoria.save();
+  usuario.save();
   return res.status(200).send({
-    message: `Categoria ${id} atualizada com sucesso`,
-    data: categoria
+    message: `Usuário ${id} atualizado com sucesso`,
+    data: usuario
   });
 }
 
 const deletar = async (req, res) => {
   try {
     let { id } = req.body;
+    
     //garante que o id só vai ter NUMEROS;
-    id = id ? id.replace(/\D/g, '') : null;
+    id = id ? id.toString().replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe um id válido para deletar a categoria'
+        message: 'Informe um id válido para deletar o usuário'
       });
     }
 
-    let categoria = await Categoria.findOne({
+    let usuario = await Usuario.findOne({
       where: {
         id
       }
     });
 
-    if (!categoria) {
-      return res.status(400).send({ message: `Não foi encontrada categoria com o id ${id}` })
+    if (!usuario) {
+      return res.status(400).send({ message: `Não foi encontrado usuário com o id ${id}` })
     }
 
-    categoria.destroy();
+    usuario.destroy();
     return res.status(200).send({
-      message: `Categoria id ${id} deletada com sucesso`
+      message: `Usuário id ${id} deletado com sucesso`
     })
   } catch (error) {
     return res.status(500).send({
