@@ -10,25 +10,7 @@ const EmprestimoLivro = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
-    },
-    // idEmprestimo: {
-    //   type: DataTypes.INTEGER,
-    //   field: 'id_emprestimo',
-    //   allowNull: false,
-    //   references: {
-    //     model: Emprestimo,
-    //     key: 'id'
-    //   }
-    // },
-    // idLivro: {
-    //   type: DataTypes.INTEGER,
-    //   field: 'id_emprestimo',
-    //   allowNull: false,
-    //   references: {
-    //     model: Livro,
-    //     key: 'id'
-    //   }
-    // }
+    }
   },
   {
     freezeTableName: true,
@@ -40,21 +22,21 @@ const EmprestimoLivro = sequelize.define(
 
 Emprestimo.belongsToMany(Livro, { 
   through: EmprestimoLivro,
-  as: 'livros',
+  as: 'emprestimos',
   foreignKey: {
-    name: 'idLivro',
-    allowNull: false,
-    field: 'id_livro'
-  } 
+    name: 'idEmprestimo',
+    field: 'id_emprestimo',
+    allowNull: false
+  }
 });
 
 Livro.belongsToMany(Emprestimo, { 
   through: EmprestimoLivro,
-  as: 'emprestimo',
+  as: 'livros',
   foreignKey: {
-    name: 'idEmprestimo',
-    allowNull: false,
-    field: 'id_emprestimo'
+    name: 'idLivro',
+    field: 'id_livro',
+    allowNull: false
   }
 });
 
