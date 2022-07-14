@@ -7,5 +7,5 @@ import Livro from "./Livro"
   // await Categoria.sync({ force: true });
   // await Autor.sync({force: true});
   // await Usuario.sync({force: true});
-  // await Livro.sync({ force: true })
+  //await Livro.sync({ force: true })
 })()

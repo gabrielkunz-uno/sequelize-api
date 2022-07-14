@@ -5,7 +5,7 @@ import Livro from "../models/Livro";
 
 const getAll = async (req, res) => {
   try {
-    const livros = await Livro.findAll();
+    const livros = await Livro.findAll({ include: ['autor', 'categoria'] });
     return res.status(200).send(livros);
   } catch (error) {
     return res.status(500).send({
@@ -29,7 +29,8 @@ const getById = async (req, res) => {
     let livro = await Livro.findOne({
       where: {
         id
-      }
+      },
+      include: ['autor', 'categoria']
     });
 
     if (!livro) {
@@ -63,10 +64,10 @@ const persistir = async (req, res) => {
 }
 
 const create = async (dados, res) => {
-  let { titulo, sinopse, emprestado, id_categoria, id_autor } = dados;
+  let { titulo, sinopse, emprestado, idCategoria, idAutor } = dados;
 
   let livro = await Livro.create({
-    titulo, sinopse, emprestado, id_categoria, id_autor
+    titulo, sinopse, emprestado, idCategoria, idAutor
   });
   return res.status(201).send(livro)
 }

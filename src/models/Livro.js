@@ -33,11 +33,22 @@ const Livro = sequelize.define(
   }
 );
 
-Livro.belongsTo(Categoria, 
-  { foreignKey: 'id_categoria' }  
-);
-Livro.belongsTo(Autor, 
-  { foreignKey: 'id_autor'}  
-);
+Livro.belongsTo(Categoria, {
+  as: 'categoria',
+  foreignKey: {
+    name: 'idCategoria', //respeitar o padrao lowerCamelCase JS
+    allowNull: false, 
+    field: 'id_categoria' //nome da coluna a ser criada no banco de dados
+  }
+});
+
+Livro.belongsTo(Autor, {
+  as: 'autor',
+  foreignKey: {
+    name: 'idAutor',
+    allowNull: false,
+    field: 'id_autor'
+  }
+});
 
 export default Livro;
