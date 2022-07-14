@@ -19,11 +19,6 @@ const Livro = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false
     },
-    emprestado: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
-    }
   },
   {
     freezeTableName: true,
