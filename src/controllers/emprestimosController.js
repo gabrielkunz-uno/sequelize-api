@@ -1,7 +1,7 @@
 import Emprestimo from "../models/Emprestimo";
 import EmprestimoLivro from "../models/EmprestimoLivro";
 import Livro from "../models/Livro";
-import { sequelize } from "../config/config";
+import { Op } from "sequelize";
 
 const getAll = async (req, res) => {
   try {
@@ -80,46 +80,46 @@ const create = async (dados, res) => {
   let emprestimo = await Emprestimo.create({
     prazo, devolucao, idUsuario
   });
-  
-  for (let index = 0; index < livros.length; index++) {
-    
+
+  for (let livro of livros) {
+
     let livroExistente = await Livro.findOne({
       where: {
-        id: livros[index]
+        id: livro
       }
     })
-    
+
     //livro não existente não pode ser emprestado
     //com isso o emprestimo é cancelado/excluido
     if (!livroExistente) {
       await emprestimo.destroy();
       return res.status(400).send({
-        message: `O livro id ${livros[index]} não existe. O empréstimo não foi salvo!!`
+        message: `O livro id ${livro} não existe. O empréstimo não foi salvo!!`
       })
     }
 
-    let livroEmprestado = await sequelize.query(`
-      select
-        id_emprestimo as id
-      from emprestimo_livros as el
-      inner join emprestimos as e on (e.id = el.id_emprestimo)
-      where e.devolucao is null and el.id_livro = ${livros[index]}
-    `);
+    let emprestimosAtivos = await livroExistente.getEmprestimos({
+      where: {
+        devolucao: {
+          [Op.is]: null
+        }
+      },
+      limit: 1
+    });
 
-    if (livroEmprestado[1].rowCount) {
+    if (emprestimosAtivos.length) {
       await emprestimo.destroy();
-      livroEmprestado = livroEmprestado[0][0] ? livroEmprestado[0][0].id : '';
       return res.status(400).send({
-        message: `O livro id ${livros[index]} já está emprestado no empréstimo ${livroEmprestado}. O empréstimo não foi salvo!!`
+        message: `O livro id ${livro} já está emprestado no empréstimo ${emprestimosAtivos[0].id}. O empréstimo não foi salvo!!`
       })
     };
 
     await EmprestimoLivro.create({
       idEmprestimo: emprestimo.id,
-      idLivro: livros[index]
+      idLivro: livro
     });
   }
-  
+
   return res.status(201).send(emprestimo)
 }
 
@@ -176,9 +176,55 @@ const deletar = async (req, res) => {
   }
 }
 
+const verificarLivro = async (req, res) => {
+  try {
+    let { idLivro } = req.body;
+
+    //garante que o id só vai ter NUMEROS;
+    idLivro = idLivro ? idLivro.toString().replace(/\D/g, '') : null;
+    if (!idLivro) {
+      return res.status(400).send({
+        message: 'Informe um id válido para consultar o livro'
+      });
+    }
+
+    let livro = await Livro.findOne({
+      where: {
+        id: idLivro
+      }
+    });
+
+    if (!livro) {
+      return res.status(400).send({ message: `Não foi encontrado livro com o id ${id}` })
+    }
+
+    let emprestimos = await livro.getEmprestimos({
+      where: {
+        devolucao: {
+          [Op.is]: null
+        }
+      }
+    });
+    
+    if (!emprestimos.length) {
+      return res.status(200).send({ message: 'Esse livro está disponível para emprestimo' })
+    }
+
+    return res.status(200).send({
+      message: 'Esse livro não está disponível para emprestimo',
+      emprestimos
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message
+    });
+  }
+}
+
 export default {
   getAll,
   getById,
   persistir,
-  deletar
+  deletar,
+  verificarLivro
 };

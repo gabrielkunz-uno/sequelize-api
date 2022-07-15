@@ -1,6 +1,7 @@
 import controller from '../controllers/emprestimosController'
 
 export default (app) => {
+	app.post('/emprestimos/verificar-disponibilidade', controller.verificarLivro)
 	app.post('/emprestimos/deletar', controller.deletar)
 	app.get('/emprestimos', controller.getAll)
 	app.get('/emprestimos/:id', controller.getById)
