@@ -5,10 +5,15 @@ import { sequelize } from "../config/config";
 
 const getAll = async (req, res) => {
   try {
-    const emprestimos = await Emprestimo.findAll({
-      include: 'emprestimos'
-    });
-    return res.status(200).send(emprestimos);
+    const emprestimos = await Emprestimo.findAll();
+    let response = [];
+    for (let emprestimo of emprestimos) {
+      let livros = await emprestimo.getLivros(); //pegamos os livros do MODEL Emprestimo
+      emprestimo = emprestimo.toJSON(); //converter o emprestimo para JSON
+      emprestimo.livros = livros; //setar no JSON do emprestimo um novo atributo livros
+      response.push(emprestimo);
+    }
+    return res.status(200).send(response);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -40,7 +45,12 @@ const getById = async (req, res) => {
       });
     }
 
-    return res.status(200).send(emprestimo);
+    let response = emprestimo.toJSON();
+    response.livros = await emprestimo.getLivros({
+      attributes: ['id', 'titulo'],
+    });
+
+    return res.status(200).send(response);
   } catch (error) {
     return res.status(500).send({
       message: error.message
